@@ -1,0 +1,157 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{mathtools}
+\usepackage[colorlinks, linkcolor=blue, urlcolor=blue, citecolor=blue]{hyperref}
+\usepackage[a4paper, left=20mm, right=20mm, top=20mm, bottom=20mm]{geometry}
+
+\title{\textbf{Geradores de números pseudoaleatórios \\
+        \large INE5429 - Segurança em Computação}}
+\author{
+    Caique Rodrigues Marques \\
+    {\texttt{c.r.marques@grad.ufsc.br}}
+}
+\date{}
+
+\begin{document}
+
+\maketitle
+\section*{Os Algoritmos}
+    \begin{itemize}
+        \item O gerador congruente linear (\textit{LCG} na sigla em inglês) é
+            um algoritmo que gera uma sequência de números pseudoaleatórios,
+            calculados com uma função linear em trecho. O gerador é definido
+            pela seguinte relação de recorrência:
+        \begin{align*}
+            X_{n+1} = (aX_{n} + c) \mod{m}
+        \end{align*}
+        onde, 
+        \begin{itemize}
+            \item $X$ é a sequência de números pseudoaleatórios;
+            \item $m$ é o módulo;
+            \item $a$ é o multiplicador;
+            \item $c$ é o incrementador;
+            \item $X_{0}$ é o valor inicial.
+        \end{itemize}
+        As constantes $m$, $a$, $c$ e $X_{0}$ são valores inteiros que
+            especificam o gerador.
+        
+        A complexidade do LCG, no pior caso é definido por $O(n)$, porque o
+            algoritmo apenas realizará cálculos, o que leva $O(1)$, fazendo
+            isso $n$ vezes.
+        
+        \item O gerador de número aleatório de Park-Miller é um tipo de gerador
+            congruente linear que opera com grupos multiplicativos de inteiros
+            módulo $n$. A fórmula geral, similar à do \textit{LCG} (com $c =
+            0$), é a seguinte:
+        \begin{align*}
+            X_{k+1} = gX_{k} \mod{n},
+        \end{align*}
+        onde o módulo $n$ é um número primo ou uma potência de um número primo,
+            o multiplicador $g$ é um elemento de alta ordem multiplicativa $n$
+            e a semente $X_{0}$ é coprimo a $n$. Em outras palavras, o gerador
+            de Park-Miller é um LCG onde $c = 0$.
+        
+        A complexidade do gerador de Park-Miler, no pior caso é definido por
+            $O(n)$, assim como no LCG, o algoritmo apenas realizará cálculos, o
+            que leva $O(1)$, fazendo isso $n$ vezes.
+        
+        \item O Xorshift é um gerador de números pseudoaleatório, sendo um
+            subconjunto da função \textit{linear-feedback shift registers}
+            (LFSRs). O algoritmo gera os números de uma sequência fazendo
+            operação de ou-exclusivo (XOR) e deslocamentos de bit à esquerda ou
+            à direita.
+        
+        A complexidade do Xorshift, no pior caso é definido por $O(n)$, pois o
+            algoritmo apenas realizará diversos cálculos, o que leva $O(1)$,
+            fazendo isso $n$ vezes.
+    \end{itemize}
+
+\section*{Tabela comparativa}
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|}
+             \hline
+             Tamanho do número & Tempo para gerar (LCG) & Tempo para gerar (PM)
+             & Tempo para gerar (Xorshift) \\
+             \hline
+             40 bits   & 380.5ns  & 346ns    & 669.2ns \\
+             56 bits   & 391.3ns  & 350.7ns  & 743.3ns \\
+             80 bits   & 388.3ns  & 358.9ns  & 681.4ns \\
+             128 bits  & 407.4ns  & 383.2ns  & 713.5ns \\
+             168 bits  & 426ns    & 393.2ns  & 745.4ns \\
+             224 bits  & 448.5ns  & 391.5ns  & 760.3ns \\
+             256 bits  & 480.6ns  & 412.2ns  & 786.4ns \\
+             512 bits  & 579.4ns  & 500.6ns  & 954.3ns \\
+             1024 bits & 776.8ns  & 633.8ns  & 1227.8ns \\
+             2048 bits & 1177.5ns & 1033.6ns & 1811.5ns \\
+             4096 bits & 2002.5ns & 1974.3ns & 3060.5ns \\
+             \hline
+        \end{tabular}
+    \end{center}
+    A tabela acima mostra os resultados testados na geração de valores de cada
+    um dos três algoritmos, com 10 milhões de \textit{rounds} cada um. Como é
+    possível notar, conforme o número de bits cresce, mais tempo leva para
+    gerar um número aleatório com aquela quantidade de bits e quem obteve
+    melhor performance foi o algoritmo de Park-Miller.
+
+\section*{Teste de aleatoriedade}
+    \subsection*{Período}
+    \begin{itemize}
+        \item Os geradores de números pseudoaleatórios possuem um período, ou
+            seja, ele terá uma sequência de números diferentes que foram
+            gerados e, depois, volta a se repetir a sequência. O tamanho de tal
+            sequência se chama período. Portanto, é necessário que o gerador
+            contenha o maior período possível.
+    
+        \item No caso do LCG com $c \neq 0$, é possível conseguir um período de
+            tamanho $m$, e isso acontece se e somente se for seguido o teorema
+            de Hull-Dobell. Portanto, é necessário seguir três
+            propriedades:\cite{Knuth1981}
+        \begin{enumerate}
+            \item $m$ e a constante $c$ são coprimos;
+            \item $a-1$ é divisível por todos os fatores primos de $m$;
+            \item $a-1$ é divisível por 4 se $m$ é divisível por 4.
+        \end{enumerate}
+        Os problemas que podem acontecer é, caso o valor do módulo seja do
+            tamanho de uma palavra (32, 64, 128, etc.) é possível atingir
+            grandes períodos, porém, apenas os bits mais significativos irão
+            alcançar o período completo de $m$, enquanto os k bits menos
+            significativos vão manter o período de $2^{k+1}$. Uma forma de
+            resolver o problema anterior é usar um módulo que seja um valor
+            primo diferente de 2, porém, está solução não irá produzir certos
+            valores. A solução usada aqui é similar à implementada no
+            \texttt{glibc}.
+    
+        \item Para o gerador de Parker-Miller com $m$ primo, o período pode ser
+            até $m-1$ se o multiplicador $a$ é escolhido como um elemento
+            primitivo dos inteiros módulo $m$. O estado inicial tem que ser
+            entre 1 e $m-1$. A solução usada é similar à implementação usada
+            pela função \texttt{minstd\_rand} do C++11.
+    
+        \item O Xorshift necessita escolher as constantes com mais cuidado a
+            fim de atingir um melhor período. No caso de um estado de tamanho
+            de 32 bits, o período pode ir a $2^{32}-1$ se houver deslocamento à
+            esquerda por 13 bits, deslocamento à direita por 17 bits e
+            deslocamento à esquerda por 5 bits, nesta ordem. O artigo
+            original\cite{Marsaglia2003} define diversas constantes a utilizar
+            e quando vale usá-las, neste caso, foi feito dois deslocamentos à
+            esquerda por 24, um deslocamento à direita por 9 bits e um
+            deslocamento à esquerda por 35 bits, nesta ordem. O módulo do
+            resultado é encontrado para garantir que o número gerado tenha no
+            máximo o tanto de bits que foi especificado.
+    \end{itemize}
+    
+\section*{Comparações}
+    O gerador de Park-Miller possui o funcionamento similar ao LCG, a diferença
+    é que $c = 0$ no gerador de Park-Miller. Xorshift possui o funcionamento
+    bem diferente de ambos, trabalhando, principalmente, com três operações: o
+    ou-exclusivo e os deslocamentos de bits à esquerda e à direita. As
+    constantes utilizadas no Xorshift e como os deslocamentos são feitos
+    depende muito de quantos bits serão gerados, enquanto tanto o LCG quando o
+    gerador Park-Miller definem o tanto de bits a serem gerados de acordo com o
+    valor definido no módulo.
+
+\bibliographystyle{acm}
+\bibliography{02-prng}
+
+\end{document}
