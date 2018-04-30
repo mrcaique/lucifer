@@ -19,6 +19,9 @@
 
 \maketitle
 
+\textbf{Nota}: As tabelas da \textit{S-box} e da \textit{S-box} inversa foram
+retiradas do livro-texto\cite{stallings2014}.
+
 \section{AES Simplificado}
 \subsection{Cifração}
 A entrada $t$ para o AES corresponde ao número do dia do aniversário acrescido
@@ -457,7 +460,7 @@ O AES padrão exige que a chave tenha pelo menos 128 bits, então, para resolver
 o problema, é realizado um \textit{padding} à esquerda com zeros. Assim os
 valores passam a ser os indicados na tabela abaixo. Os dez rounds de cifração
 estão indicados na tabela \ref{fig:tab1} - o resultado está indicado na última
-linha, na coluna \texttt{AddRoundKey}.
+linha, na coluna \texttt{AddRoundKey}\footnotemark.
 \begin{center}
     \begin{tabular}{|c|c|}
         \hline
@@ -469,6 +472,8 @@ linha, na coluna \texttt{AddRoundKey}.
         \hline
     \end{tabular}
 \end{center}
+\footnotetext{Tabela de cifração e decifração do AES gerada pelo software "AES
+ciphers internals"\cite{nayuki2016}.}
 
 \subsection{Decifração}
 A saída da cifragem é usada como entrada para o decifrador AES padrão. A chave
@@ -488,6 +493,10 @@ a saída está apresentada na primeira linha, na coluna \texttt{AddRoundKey}.
     \end{tabular}
 \end{center}
 
+\bibliographystyle{acm}
+\bibliography{03-aes}
+
+\appendix
 \begin{figure}
     \centering
     \includegraphics[width=1\linewidth]{imgs/table_aes_ciph.jpg}
