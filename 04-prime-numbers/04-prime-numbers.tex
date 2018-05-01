@@ -1,0 +1,89 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{mathtools}
+\usepackage[colorlinks, linkcolor=blue, urlcolor=blue, citecolor=blue]{hyperref}
+\usepackage[a4paper, left=20mm, right=20mm, top=20mm, bottom=20mm]{geometry}
+
+\title{\textbf{Números primos \\
+        \large INE5429 - Segurança em Computação}}
+\author{
+    Caique Rodrigues Marques \\
+    {\texttt{c.r.marques@grad.ufsc.br}}
+}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{itemize}
+    \item O teste de primalidade de Fermat define que se $p$ é primo e $a$ não
+    é divisível por $p$, então temos: 
+    \begin{equation}\label{eq:fermat}
+        a^{p-1} \equiv 1 \pmod{p}.
+    \end{equation}
+    Para testar se $p$ é primo, então vários $a$'s aleatórios e não divisíveis
+    por $p$ são coletados. Se a igualdade em \ref{eq:fermat} não for válida com
+    os valores definidos de $a$ e $p$, então é dito que $p$ é composto. Por
+    outro lado, se a igualdade for válida para um ou mais valores de $a$, então
+    $p$ é um possível primo. No entanto, o teste aprova determinados
+    pseudoprimos\footnotemark[1], principalmente os números de
+    Carmichael\footnotemark[2].
+
+    \footnotetext[1]{Os números $p$ que satisfazem a condição em
+    \ref{eq:fermat}, mas não são primos, são chamados de pseudoprimos de
+    Fermat.}
+    \footnotetext[2]{Número de Carmichael é um número composto $p$ que satisfaz
+    a relação em \ref{eq:fermat} para todos os inteiros $a$ que são coprimos a
+    $p$.}
+    
+    \item O teste de primalidade de Miller-Rabin é um aperfeiçoamento ao teste
+    de primalidade de Fermat. Dado um $n$ primo e $n > 2$, então $n-1$ vai ser
+    par e pode ser escrito como $2^{s}d$, onde $s$ e $d$ são positivos inteiros
+    e $d$ é ímpar. Podemos verificar que $n$ não é primo, se para todo $0 \leq
+    r \leq s-1$ temos
+    \begin{equation*}
+        a^{d} \not\equiv 1 \pmod{n} \land a^{2^{r}d} \not\equiv -1 \pmod{n},
+    \end{equation*}
+    então $n$ não é primo, caso contrário, $n$ possivelmente é primo. Vale
+    notar que $a$ é uma testemunha de que $n$ é composto, assim, $a$'s são
+    escolhidos aleatoriamente dentre o intervalo $1 < a < n-1$.
+    
+    \item Para o caso do teste de Miller-Rabin, apesar de possuir uma
+    complexidade maior e, consequentemente, possuir um maior tempo de execução,
+    ele possui melhor precisão em detectar possíveis primos porque independe do
+    valor de entrada, conseguindo uma probabilidade de $\frac{1}{2}$ de
+    detectar um número composto. Ao contrário do caso do teste de Fermat, ele
+    consegue atingir a mesma probabilidade se o valor de entrada não for um
+    número de Carmichael, portanto, ele acaba tendo um caso claro de
+    falso-positivo.
+
+    \item O arquivo \texttt{primality\_test.py} implementa ambos os testes de
+    primalidade. Ambos podem ser usados da seguinte maneira:
+    \begin{verbatim}
+        $ python3
+        >>> from primality_test import fermat, miller_rabin
+        >>> miller_rabin(64380800680355443923012985496149269915138610, 100)
+        True
+        >>> fermat(12764787846358441471, 100)
+        True
+    \end{verbatim}
+
+    O algoritmo de Miller-Rabin usa exponenciação modular, possuindo uma
+    complexidade de $O(k\log^{3}n)$, onde $k$ é o número de testes realizados.
+    O algoritmo de Fermat, que também usa exponenciação modular, possui uma
+    complexidade de
+    $O(k\times\log^{2}n\times\log(\log(n))\times\log(\log(\log(n))))$, onde $k$
+    é o número de testes realizados.
+    
+    \item O arquivo \texttt{find\_primes.py} é um simples programa que executa
+    testes de primalidade, procurando por números primos com bits de tamanho
+    100, 200, 300, ..., 10000. A saída gerada apresenta o tempo para achar o
+    número primo, o número de bits e o inteiro primo encontrado. Como é
+    possível notar, o programa demora mais para achar primos com bits maiores
+    que 2000, devido às várias exponenciações e operações modulares que são
+    executadas.
+\end{itemize}
+
+\end{document}
