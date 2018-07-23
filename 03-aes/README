@@ -1,0 +1,2 @@
+An example of encryption and decryption of AES and Simplified AES. The input
+for both algorithms is the number of the day of the birthday added with 10000.

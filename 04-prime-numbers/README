@@ -1,0 +1,2 @@
+Implementation of Fermat and Miller-Rabin primality tests, also, a script wich
+runs one of both specified primality tests, looking for prime numbers.
