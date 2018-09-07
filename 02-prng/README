@@ -1,2 +1,2 @@
-Implementation of two pseudo-random number generators: linear congruential
-generator and Park-Miller random number generator.
+Implementation of three pseudo-random number generators: linear congruential
+generator, Park-Miller random number generator and Xorshift.
